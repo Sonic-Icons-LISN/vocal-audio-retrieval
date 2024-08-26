@@ -93,8 +93,6 @@ To further enhance our dataset, we will use the newly released **Llama 3.1 70B**
 
 ## Week 4
 
-## Week 5
-
 #### Background and Current Work
 I’ve been extending the CLAP model into CLVAP, adding vocal imitations as an additional modality alongside text descriptions. The goal is to improve the model's ability to retrieve and understand audio samples by using both text and vocal imitations as inputs, which could be more effective for complex sounds that are difficult to describe with only text.
 
