@@ -89,4 +89,44 @@ To further enhance our dataset, we will use the newly released **Llama 3.1 70B**
 
 - **Synonym Replacement**: Replacing words in the original captions with their synonyms to create new variations.
 - **Paraphrasing**: Using Llama 3.1 to generate paraphrased versions of existing captions.
-- **Extended Descriptions**: Generating more detailed descriptions of the audio samples to provide richer textual data.
+- **Extended Descriptions**: Generating more detailed descriptions of the audio samples
+
+## Week 4
+
+## Week 5
+
+#### Background and Current Work
+I’ve been extending the CLAP model into CLVAP, adding vocal imitations as an additional modality alongside text descriptions. The goal is to improve the model's ability to retrieve and understand audio samples by using both text and vocal imitations as inputs, which could be more effective for complex sounds that are difficult to describe with only text.
+
+#### Approaches Explored
+
+1. **Early Fusion Approach**
+   - **Training Details**: I began with the Early Fusion approach, where I combined the embeddings of text and vocal modalities immediately after encoding. To minimize the architectural changes required from CLAP to CLVAP, I used the PANN (Pretrained Audio Neural Networks) audio encoder.
+   - **Training Loss**: The training loss started relatively high, around **~6.5**, indicating that the model was struggling with the additional complexity introduced by vocal imitations. Over time, the loss decreased but plateaued around **~2.8**. This was significantly worse than the text-audio CLAP model, which typically decreases from **~5.2** to **~1.3** on a good dataset.
+   - **Issues Identified**:
+     - **Small Dataset Size**: The vocal imitations dataset was relatively small, leading to overfitting. The model could not generalize well, especially when fusing text and vocal data early on.
+     - **Uninitialized MLPs**: The MLPs used for fusion were not pre-initialized or pretrained. They struggled to learn meaningful transformations from scratch, particularly with the limited dataset, leading to poor convergence and performance.
+   - **Results**:
+     - **Accuracy Metrics**: The retrieval accuracy was slowly lowering. After 10 epochs it was around **40.2%**. The model often failed to effectively understand the vocal imitations, leading to confused associations between inputs and outputs.
+   - **Conclusion**: The Early Fusion approach diluted important modality-specific features, especially in the context of a small dataset. The uninitialized MLPs compounded this issue, making it difficult for the model to learn effective representations.
+
+2. **Late Fusion Approach**
+   - **Training Details**: After recognizing the limitations of Early Fusion, I switched to Late Fusion, where I kept the text and vocal encoders separate and only merged their embeddings in the final layers before projection. I continued using the PANN audio encoder to keep the transition simple.
+   - **Training Loss**: The training loss began at around **~5.8** and decreased more steadily than in Early Fusion, eventually reaching **~2.1**. However, this was still above the expected range for CLAP models, indicating ongoing issues.
+   - **Challenges**:
+     - **PANN Encoder Limitations**: PANN, while effective for environmental audio, was not well-suited for encoding human vocal imitations. This led to poor-quality vocal embeddings, which negatively impacted the fusion process.
+     - **Inadequate Modality Alignment**: The embeddings for text and vocal imitations were not well-aligned, causing the model to struggle during the final fusion step. This misalignment was likely due to the distinct nature of vocal and textual data, which the PANN encoder couldn't handle effectively.
+   - **Results**:
+     - **Accuracy Metrics**: The retrieval accuracy improved slightly to around **62-65%**, but this was still below the performance of the text-audio CLAP model. The model struggled to associate vocal imitations with the correct audio samples, indicating that the fusion was not happening effectively.
+   - **Conclusion**: Although Late Fusion retained more modality-specific information than Early Fusion, it still failed to achieve good alignment between the text and vocal embeddings. This was partly due to the limitations of the PANN encoder and the small size of the vocal dataset.
+
+#### Transition to Cross-Attention Fusion Approach
+
+- **Realization**: The results from both Early and Late Fusion approaches highlighted that a more sophisticated method was needed to effectively combine text and vocal imitations. The early and late fusion strategies did not allow the model to dynamically adjust and refine the interaction between the modalities, which is crucial for capturing the complex relationship between text, vocal imitations, and audio.
+
+- **Switch to Cross-Attention Fusion**: I decided to move to the Cross-Attention Fusion approach, which introduces a mechanism for the text and vocal modalities to interact dynamically throughout the network. This approach allows for more refined and context-aware fusion, making it possible to preserve and leverage the unique features of each modality.
+
+- **Challenges in Switching**:
+  - **Architectural Complexity**: Implementing Cross-Attention required significant refactoring of the model architecture. Unlike Early and Late Fusion, which primarily modified the final layers, Cross-Attention involves integrating attention mechanisms that allow for bidirectional interactions between text and vocal embeddings deep within the network. This added complexity required more advanced training strategies and careful tuning to ensure stability.
+  - **Incompatibility with PANN**: PANN was not suitable for Cross-Attention Fusion due to its limitations in encoding vocal data. I had to switch to the HTSAT encoder, which is better suited for handling both environmental and vocal audio. However, this switch required extensive refactoring because HTSAT has different input requirements and produces embeddings with different dimensions compared to PANN.
+  - **Training Instability**: The introduction of attention mechanisms added to the computational load and complexity of the model, making training more challenging. The model required more sophisticated learning rate schedules and regularization techniques to avoid overfitting and ensure stable convergence.
