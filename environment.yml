@@ -1,0 +1,21 @@
+name: stable-audio
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+  - nvidia/label/cuda-11.8.0
+
+dependencies:
+  - python=3.11
+  - pip
+  - packaging
+  - pysoundfile
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=11.8
+  - nvidia/label/cuda-11.8.0::cuda-toolkit=11.8
+  - pip:
+    - stable-audio-tools
+    - flash-attn
+

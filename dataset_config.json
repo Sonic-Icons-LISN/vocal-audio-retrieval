@@ -1,0 +1,26 @@
+{
+    "dataset_type": "audio_dir",
+    "datasets": [
+        {
+            "id": "kshmr_vol_1",
+            "path": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/datasets/Vol.1",
+            "custom_metadata_module": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/dataset.py"
+        },
+        {
+            "id": "kshmr_vol_2",
+            "path": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/datasets/Vol.2",
+            "custom_metadata_module": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/dataset.py"
+        },
+        {
+            "id": "kshmr_vol_3",
+            "path": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/datasets/Vol.3",
+            "custom_metadata_module": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/dataset.py"
+        },
+        {
+            "id": "kshmr_vol_4",
+            "path": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/datasets/Vol.4",
+            "custom_metadata_module": "/mnt/beegfs/home/koroshinadze/sketching_audio/Dev/stable-audio/dataset.py"
+        }
+    ],
+    "random_crop": false
+}
